@@ -1,0 +1,216 @@
+<script src="https://cdn.jsdelivr.net/npm/microsoft-adaptivecards@0.6.1/built/adaptive-cards.min.js"></script>
+<div
+  (click)="onPopUp()"
+  #botprofile
+  class="bot-profile"
+  style="
+    background: white;
+    display: none;
+    padding: 1rem;
+    border-radius: 76px;
+    height: 70px;
+    position: absolute;
+    right: 20px;
+    bottom: 10px;
+    background: #0b556a;
+    color: white;
+  "
+>
+  <img src="./assets/chatbot.png" style="height: 50px; border-radius: 50%" />
+</div>
+
+<div class="chat-container">
+  <!-- <div class="chat-container"> -->
+  <div class="chat-header" style="box-shadow: 0 0 10px white">
+    <p>Bravishma Copilot</p>
+  </div>
+
+  <!-- <div class="chat-messages"  style="overflow-anchor: none;"> -->
+  <div class="chat-messages" #messageContainer>
+    <div class="ll" *ngFor="let msg of chatList; index as i">
+      <div
+        *ngIf="msg.type !== 'typing' && msg.type !== 'event'"
+        class="message"
+        [ngClass]="{
+          bot: msg.from.role === 'bot',
+          user: msg.from.role === 'user',
+          anchor: chatList.length === i + 1
+        }"
+      >
+        <!-- <img [src]="getUserImage()" class="profile-image"  *ngIf="msg.type.from === '' && msg.type !== 'event'" [ngClass]="{
+      
+        user: msg.from.role === 'user',
+  
+      }" > -->
+
+        <img
+          *ngIf="msg.from.role === 'bot'"
+          src="./assets/chat-logo.png"
+          class="profile-image bot"
+          [ngClass]="{bot: msg.from.role === 'bot',}"
+          style="
+            height: 25px;
+            width: 25px;
+            margin-bottom: 4px;
+            margin-right: 5px;
+            border-radius: 12px;
+          "
+        />
+
+        <img
+          *ngIf="msg.from.role === 'user'"
+          src="./assets/user-logo.svg"
+          class="profile-image user"
+          [ngClass]="{user: msg.from.role === 'user',}"
+          style="height: 25px; width: 25px; margin-bottom: 4px"
+        />
+
+        <div
+          class="message-content"
+          [ngClass]="{
+            botcol: msg.from.role === 'bot',
+            cus: msg.from.role === 'user'
+          }"
+        >
+          <!-- <div class="message-text" [innerHTML]="msg.text"></div> -->
+          <!--  div for if attachment is there-->
+          <div
+            class="message-text"
+            *ngIf="msg.type === 'message' && msg.attachments?.length > 0"
+            [innerHTML]="getSafeHtml(msg.attachments[0].html)"
+          ></div>
+          <!--  div for if text only-->
+          <div
+            class="message-text"
+            *ngIf="msg.type === 'message' && msg.attachments?.length <= 0"
+            [innerHTML]="msg.text"
+          ></div>
+          <!--  div for if iamge is there-->
+          <div class="message-text" *ngIf="msg.attachments?.length > 0">
+            <img style="width: 100%" [src]="userImage" alt="" />
+          </div>
+
+          <!--  div for if timestamp-->
+          <div
+            class="message-time"
+            [ngClass]="{
+              botcol: msg.from.role === 'bot',
+              cus: msg.from.role === 'user'
+            }"
+          >
+            {{ msg.timestamp | date : "hh:mm a" }}
+          </div>
+        </div>
+
+        <!-- <div
+          class="message-content"
+          [ngClass]="{
+            botcol: msg.from.role === 'bot',
+            cus: msg.from.role === 'user'
+          }"
+          *ngIf="msg.type === 'message' && msg.attachments?.length > 0"
+        >
+          <div
+            class="message-text"
+            [innerHTML]="getSafeHtml(msg.attachments[0].html)"
+          ></div>
+          <div 
+            class="message-time"
+            [ngClass]="{
+              botcol: msg.from.role === 'bot',
+              cus: msg.from.role === 'user'
+            }"
+          >
+            {{ msg.timestamp | date : "hh:mm a" }}
+          </div>
+        </div> -->
+      </div>
+         <!-- div for suggeested actins -->
+      <div
+        class="suggestedActionsContainer"
+        *ngIf="msg.suggestedActions"
+        #suggestedActionsContainer
+      >
+        <!-- <div class="scrollbuttons scroll-left">
+          <button (click)="scrollLeft()">
+            <img
+              style="height: 16px"
+              src="./assets/scrollarrowtoleft_83879.png"
+              alt=""
+            />
+          </button>
+        </div> -->
+
+        <!-- style="background: red; height: 100px; width: 100px" -->
+        <div *ngFor="let action of msg.suggestedActions.actions">
+          <button
+            class="suggestedActionsContainer-btn"
+            *ngIf="action.type !== 'openUrl'; else elseBlock"
+            (click)="
+              sendMessage(action.value, undefined, suggestedActionsContainer)
+            "
+          >
+            {{ action.text }}
+          </button>
+          <ng-template #elseBlock>
+            <button class="agent-link">
+              <a [href]="connectToAgentUrl" target="_blank">{{
+                action.value
+              }}</a>
+            </button>
+          </ng-template>
+        </div>
+
+        <!-- <div class="scrollbuttons scroll-right">
+          <button (click)="scrollRight()">
+            <img
+              style="height: 16px"
+              src="./assets/right-arrowflat.png"
+              alt=""
+            />
+          </button>
+        </div> -->
+      </div>
+      <!-- <div
+        class="adptv-card"
+        *ngIf="msg.type === 'message' && msg.attachments?.length > 0"
+        [innerHTML]="getSafeHtml(msg.attachments[0].html)"
+      ></div> -->
+    </div>
+  </div>
+  <form
+    (ngSubmit)="sendMessage(messageInput.value, messageInput)"
+    class="chat-input"
+  >
+    <!-- <input type="text" #messageInput /> -->
+    <input
+      type="text"
+      #messageInput
+      name="message"
+      placeholder="Ask me anything..."
+      autocomplete="off"
+      autofocus
+      value="cricket"
+    />
+    <span
+      style="position: absolute; right: 19px; /* height: 30px; */ bottom: 11px"
+      ><button
+        type="submit"
+        style="
+          padding: 0;
+          cursor: pointer;
+          margin: 0;
+          border: none;
+          background: none;
+        "
+      >
+        <img
+          style="height: 24px; color: red"
+          src="./assets/icons8-send-48.png"
+          alt=""
+        /></button
+    ></span>
+  </form>
+
+  
+</div>

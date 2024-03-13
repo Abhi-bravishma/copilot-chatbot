@@ -1,0 +1,12 @@
+import { Injectable } from '@angular/core';
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
+@Injectable({
+  providedIn: 'root',
+})
+export class CopiloServiceService {
+      
+  url =
+  'wss://directline.botframework.com/v3/directline/conversations/4gw2aJ5Y0k3CsRrJYnG1Xl-in/stream?watermark=-&t=eyJhbGciOiJSUzI1NiIsImtpZCI6ImxZd3JkMzFhdmtEckhnQ2Z5bmdCZVM4T196byIsIng1dCI6ImxZd3JkMzFhdmtEckhnQ2Z5bmdCZVM4T196byIsInR5cCI6IkpXVCJ9.eyJib3QiOiI5MDk1NzJmZS05NmJhLTQzYTQtODdkMy1lMDVhYmUwYTg1NDUiLCJzaXRlIjoiblJrVzlXU0FGb1kiLCJjb252IjoiNGd3MmFKNVkwazNDc1JySlluRzFYbC1pbiIsIm5iZiI6MTcwOTE5Mzg0MSwiZXhwIjoxNzA5MTkzOTAxLCJpc3MiOiJodHRwczovL2RpcmVjdGxpbmUuYm90ZnJhbWV3b3JrLmNvbS8iLCJhdWQiOiJodHRwczovL2RpcmVjdGxpbmUuYm90ZnJhbWV3b3JrLmNvbS8ifQ.qpdvGNskCY7dGNNJWku3gGkq2kr1KTp66GhZCWXMZiqNSfRnRnZeECuVcWzZrscdrh5WIr0DAgVfGtk_UDxPfq_oeoGFj8NHbHz8DVxQZ0W3bmvJZ390DXBiKAzHkHp-25ygTS9G3NSfRyzyL2Xuf4DQbSHuMhm44xKaWZEu-o8R0g0LTf55A4x7OLHNRQVIcNWmpPAf54PNbsUKPwIvtZbG2vDezLSdRQQHqjA1Fdo_CHmj7osWeEWwazDF1mXIRS6ln415nKqV-dIzHZ39yET4SiaLhqE5FdG0x4W_x49W59Ph2SZ6bvWnsNh5GknqGBnLUcKClN57khqQeqYg_A';
+
+
+}

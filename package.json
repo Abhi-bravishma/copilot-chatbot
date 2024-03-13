@@ -18,8 +18,14 @@
     "@angular/platform-browser": "^16.1.0",
     "@angular/platform-browser-dynamic": "^16.1.0",
     "@angular/router": "^16.1.0",
+    "adaptive-expressions": "^4.22.1",
+    "adaptivecards": "^3.0.2",
+    "adaptivecards-designer": "^2.4.3",
+    "adaptivecards-templating": "^2.3.1",
     "rxjs": "~7.8.0",
+    "swiper": "^11.0.7",
     "tslib": "^2.3.0",
+    "websocket": "^1.0.34",
     "zone.js": "~0.13.0"
   },
   "devDependencies": {
