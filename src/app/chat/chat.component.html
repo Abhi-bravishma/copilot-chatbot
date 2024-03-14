@@ -82,12 +82,26 @@
           <!--  div for if text only-->
           <div
             class="message-text"
-            *ngIf="msg.type === 'message' && msg.attachments?.length <= 0"
+            *ngIf="msg.type === 'message' "
             [innerHTML]="msg.text"
           ></div>
           <!--  div for if iamge is there-->
-          <div class="message-text" *ngIf="msg.attachments?.length > 0">
-            <img style="width: 100%" [src]="userImage" alt="" />
+          <div class="message-text" style="position: relative;
+        " *ngIf="msg.attachments?.length > 0 || msg.attachmentLayout === 'carousel'">
+            <button *ngIf="msg.attachmentLayout === 'carousel'" class="prev" (click)="scrollPrev()" alt="">prev</button>
+            <div class="carousel" #carouselContainer>
+             
+              <div *ngFor="let attachment of msg.attachments">
+          
+                <div *ngFor="let image of attachment.content.images">
+                  <img style="width: 100%;" [src]="image.url">
+                </div>
+                
+              </div>
+              <button *ngIf="msg.attachmentLayout === 'carousel'"  class="next" (click)="scrollNext()">Next</button>
+
+            </div>
+            
           </div>
 
           <!--  div for if timestamp-->
@@ -205,7 +219,7 @@
         "
       >
         <img
-          style="height: 24px; color: red"
+          style="height: 24px;"
           src="./assets/icons8-send-48.png"
           alt=""
         /></button

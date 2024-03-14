@@ -172,3 +172,56 @@ padding: .5rem 2rem;
   text-decoration: underline;
   
 }
+.carousel {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap; 
+}
+
+.carousel > div {
+  flex: 0 0 auto;
+  width: 300px; 
+  margin-right: 10px;
+}
+.carousel {
+  overflow-x: hidden;
+  white-space: nowrap; 
+}
+
+.carousel img {
+  display: inline-block;
+}
+.next{
+  border: none;
+    position: absolute;
+    right: -14px;
+    bottom: 50%;
+    background: #a4a4a45c;
+    color: white;
+    padding: 2px 5px;
+
+}
+.prev{
+  border: none;
+  position: absolute;
+  bottom: 50%;
+  background: #a4a4a45c;
+  color: white;
+  padding: 2px 5px;
+  left: -14px;
+}
+.input-box {
+  position: relative;
+}
+
+.upload-icon,
+.send-icon {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  height: 24px;
+}
+
+.upload-icon {
+  right: 40px;
+}

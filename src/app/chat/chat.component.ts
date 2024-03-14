@@ -13,6 +13,8 @@ import { AdaptiveCard, HostConfig } from 'adaptivecards';
 export class ChatComponent {
   [x: string]: any;
   private newMessage = new Subject<void>();
+  @ViewChild('carouselContainer') carouselContainer!: ElementRef;
+
  
   @ViewChild('botprofile')
   botprofile!: ElementRef<any>;
@@ -124,13 +126,13 @@ export class ChatComponent {
       eventData?.activities[0]?.suggestedActions?.actions?.map((ele: any) =>
         console.log('🧐', ele.type)
       );
-      console.log('audio', eventData?.activities[0]?.attachments[0].content);
+      console.log('audio', eventData?.activities[0]?.attachments[0]?.content);
 
-      const message = eventData?.activities[0]?.attachments[0].content;
+      const message = eventData?.activities[0]?.attachments[0]?.content;
 
-      if (message.images && message.images.length > 0) {
+      if (message?.images && message?.images.length > 0) {
         this.userImage = this.sanitzer.bypassSecurityTrustResourceUrl(
-          message.images[0].url
+          message.images[0]?.url
         );
         console.log('image', this.userImage);
       }
@@ -252,7 +254,7 @@ export class ChatComponent {
     let data = await response.text();
     console.log(data);
   }
- //it is for the initial message which comes on opening of copilot
+ //it is for the initial message which comes on opening
   async sendInitialMessege(conversionDetails: any) {
     try {
       const { conversationId, token } = conversionDetails;
@@ -315,5 +317,13 @@ export class ChatComponent {
   onEventOccurred(event: any) {
     // console.log(event);
     console.log('adaptive card btn clicked');
+  }
+
+  scrollPrev() {
+    this.carouselContainer.nativeElement.scrollLeft -= 320; 
+  }
+  
+  scrollNext() {
+    this.carouselContainer.nativeElement.scrollLeft += 320;
   }
 }
