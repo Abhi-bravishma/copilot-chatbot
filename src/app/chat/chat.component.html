@@ -19,7 +19,7 @@
   <img src="./assets/chatbot.png" style="height: 50px; border-radius: 50%" />
 </div>
 
-<div class="chat-container">
+<div class="chat-container" >
   <!-- <div class="chat-container"> -->
   <div class="chat-header" style="box-shadow: 0 0 10px white">
     <p>Bravishma Copilot</p>
@@ -80,28 +80,43 @@
             [innerHTML]="getSafeHtml(msg.attachments[0].html)"
           ></div>
           <!--  div for if text only-->
-          <div
+          <div 
             class="message-text"
-            *ngIf="msg.type === 'message' "
+            *ngIf="msg.type === 'message'"
             [innerHTML]="msg.text"
           ></div>
           <!--  div for if iamge is there-->
-          <div class="message-text" style="position: relative;
-        " *ngIf="msg.attachments?.length > 0 || msg.attachmentLayout === 'carousel'">
-            <button *ngIf="msg.attachmentLayout === 'carousel'" class="prev" (click)="scrollPrev()" alt="">prev</button>
+          <div
+            class=""
+            style="position: relative"
+            *ngIf="
+              msg.attachments?.length > 0 || msg.attachmentLayout === 'carousel'
+            "
+          >
+            <button
+              *ngIf="msg.attachmentLayout === 'carousel'"
+              class="prev"
+              (click)="scrollPrev()"
+              alt=""
+            >
+              prev
+            </button>
             <div class="carousel" #carouselContainer>
-             
+              
               <div *ngFor="let attachment of msg.attachments">
-          
                 <div *ngFor="let image of attachment.content.images">
-                  <img style="width: 100%;" [src]="image.url">
+                  <img style="width: 100%" [src]="image.url" />
+                 
                 </div>
-                
               </div>
-              <button *ngIf="msg.attachmentLayout === 'carousel'"  class="next" (click)="scrollNext()">Next</button>
-
+              <button
+                *ngIf="msg.attachmentLayout === 'carousel'"
+                class="next"
+                (click)="scrollNext()"
+              >
+                Next
+              </button>
             </div>
-            
           </div>
 
           <!--  div for if timestamp-->
@@ -139,7 +154,7 @@
           </div>
         </div> -->
       </div>
-         <!-- div for suggeested actins -->
+      <!-- div for suggeested actins -->
       <div
         class="suggestedActionsContainer"
         *ngIf="msg.suggestedActions"
@@ -164,7 +179,7 @@
               sendMessage(action.value, undefined, suggestedActionsContainer)
             "
           >
-            {{ action.text }}
+            {{ action.text || action.value }}
           </button>
           <ng-template #elseBlock>
             <button class="agent-link">
@@ -197,6 +212,7 @@
     class="chat-input"
   >
     <!-- <input type="text" #messageInput /> -->
+
     <input
       type="text"
       #messageInput
@@ -204,11 +220,31 @@
       placeholder="Ask me anything..."
       autocomplete="off"
       autofocus
-      value="cricket"
+     
     />
-    <span
-      style="position: absolute; right: 19px; /* height: 30px; */ bottom: 11px"
-      ><button
+    
+    <span style="position: absolute; right: 19px; bottom: 11px">
+      <!-- <button
+        type="button"
+        (click)="fileInput.click()"
+        style="
+          padding: 0;
+          cursor: pointer;
+          margin: 0 5px;
+          border: none;
+          background: none;
+        "
+      >
+        <img
+          src="../assets/upload.png"
+          style="height: 24px"
+          alt="Upload icon"
+        />
+      </button> -->
+
+      <input type="file" #fileInput style="display: none" />
+
+      <button
         type="submit"
         style="
           padding: 0;
@@ -219,12 +255,26 @@
         "
       >
         <img
-          style="height: 24px;"
-          src="./assets/icons8-send-48.png"
-          alt=""
-        /></button
-    ></span>
+          src="../assets/icons8-send-48.png"
+          style="height: 24px"
+          alt="Send icon"
+        />
+      </button>
+    </span>
   </form>
+  <div *ngIf="isUserInactive" class="inactivity-popup" style="position: absolute;
+  bottom: 76px;
+  left: 51px;
+  display: flex;
+    gap: 49px;
+">
 
+    <button class="activity-btn"  (click)="openLiveChat()">Talk to Agent</button>
+    
+    <button class="activity-btn"(click)="restartConversation()">Start Over</button>
+  
+    <button class="activity-btn"(click)="closeConversation()">Thank You</button>
+  
+  </div>
   
 </div>

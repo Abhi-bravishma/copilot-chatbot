@@ -225,3 +225,13 @@ padding: .5rem 2rem;
 .upload-icon {
   right: 40px;
 }
+.activity-btn{
+  padding: 8px 10px;
+    background: #0b556a;
+    color: white;
+    border: none;
+    animation: bounce .30000s infinite alternate;
+}
+@keyframes bounce {
+  to { transform: scale(1.1); }
+}

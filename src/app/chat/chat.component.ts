@@ -1,4 +1,10 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  Input,
+  ViewChild,
+} from '@angular/core';
 import { CopiloServiceService } from '../copilo-service.service';
 import { Subject } from 'rxjs';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -11,11 +17,35 @@ import { AdaptiveCard, HostConfig } from 'adaptivecards';
   preserveWhitespaces: true,
 })
 export class ChatComponent {
+  @HostListener('document:mousemove')
+  resetInactivityTimer() {
+    clearTimeout(this.inactivityTimer);
+
+    this.startInactivityTimer();
+  }
+
+  @HostListener('document:click')
+  resetInactivityTimerr() {
+    clearTimeout(this.inactivityTimer);
+    this.isUserInactive = false;
+    this.startInactivityTimer();
+  }
+  @HostListener('document:keydown', ['$event'])
+  onKeydown(event: any) {
+    this.resetInactivitytTimer();
+  }
+
+  resetInactivitytTimer() {
+    // clear timeout, reset timer
+    clearTimeout(this.inactivityTimer);
+    this.isUserInactive = false;
+    this.startInactivityTimer();
+  }
+
   [x: string]: any;
   private newMessage = new Subject<void>();
   @ViewChild('carouselContainer') carouselContainer!: ElementRef;
 
- 
   @ViewChild('botprofile')
   botprofile!: ElementRef<any>;
   @ViewChild('renderedCard')
@@ -39,20 +69,22 @@ export class ChatComponent {
   message: string = '';
   socketUrl: any;
   conversionDetails: any;
+  inactivityTimer: any;
+  isUserInactive = false;
 
   constructor(private sanitzer: DomSanitizer) {}
-    //for http safe requests
+  //for http safe requests
   getSafeHtml(html: string) {
     return this.sanitzer.bypassSecurityTrustHtml(html);
   }
-
 
   async ngOnInit() {
     this.conversionDetails = await this.getSocketUrl();
     this.socketUrl = this.conversionDetails.streamUrl;
     this.constructWebSocketURL();
-  }
 
+    this.startInactivityTimer();
+  }
 
   //to create websocket and get the details
   constructWebSocketURL(): void {
@@ -178,7 +210,7 @@ export class ChatComponent {
       console.log('WebSocket connection closed');
     };
   }
-   //send message to  copilot
+  //send message to  copilot
   sendMessage(
     message: any,
     messageInput?: HTMLInputElement,
@@ -199,14 +231,13 @@ export class ChatComponent {
       // suggestedActions && suggestedActions.remove(  );
     }
   }
- // to get the details live conversationId and needed deatils through token
+  // to get the details live conversationId and needed deatils through token
   async getSocketUrl() {
     let headersList = {
       Accept: '*/*',
       Authorization:
-        // 'Bearer nRkW9WSAFoY.qsrTi92ZljrPGQalhmW0ARz0fM7UKrdmiXefdnJw56s',
-        // 'Bearer mcKUYtZZ-5A.SNSxaE9Tb2FcLEtXhLAq-ISgM4LAwiH-dzaAvCAuTZA',
-        'Bearer 6mJ1ECPC0dk.hunFtodVEt72En-mSOwQiSLcBabsgjK_zwLVeAYq6U8',
+         'Bearer nRkW9WSAFoY.qsrTi92ZljrPGQalhmW0ARz0fM7UKrdmiXefdnJw56s'    // University Copilot (classic),
+      //  'Bearer mcKUYtZZ-5A.SNSxaE9Tb2FcLEtXhLAq-ISgM4LAwiH-dzaAvCAuTZA', //University AI Copilot,
     };
 
     let response = await fetch(
@@ -254,7 +285,7 @@ export class ChatComponent {
     let data = await response.text();
     console.log(data);
   }
- //it is for the initial message which comes on opening
+  //it is for the initial message which comes on opening
   async sendInitialMessege(conversionDetails: any) {
     try {
       const { conversationId, token } = conversionDetails;
@@ -287,9 +318,9 @@ export class ChatComponent {
       console.log('error in send initial message', error);
     }
   }
+  uploadImage() {}
 
-
-   //code for the bot popup and all
+  //code for the bot popup and all
   onPopUp() {
     this.popUp = !this.popUp;
 
@@ -320,10 +351,33 @@ export class ChatComponent {
   }
 
   scrollPrev() {
-    this.carouselContainer.nativeElement.scrollLeft -= 320; 
+    this.carouselContainer.nativeElement.scrollLeft -= 320;
   }
-  
+
   scrollNext() {
     this.carouselContainer.nativeElement.scrollLeft += 320;
+  }
+
+  startInactivityTimer() {
+    this.inactivityTimer = setTimeout(() => {
+      this.isUserInactive = true;
+    }, 30000); // 3s timeout
+  }
+  openLiveChat() {
+    // open live chat
+    this.sendMessage('Talk to agent');
+    this.isUserInactive = false;
+  }
+
+  restartConversation() {
+    // restart conversation
+    this.sendMessage('start over');
+    this.isUserInactive = false;
+  }
+
+  closeConversation() {
+    this.sendMessage('thank you');
+    // close conversation
+    this.isUserInactive = false;
   }
 }
