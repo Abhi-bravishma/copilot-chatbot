@@ -1,0 +1,237 @@
+.chat-container {
+  --chat-primary: #0b556a;
+  --chat-secondary: white;
+  --chat-thirdary: #0b556a;
+  height: 100%;
+  width: 100%;
+  display: flex;
+
+  flex-direction: column;
+  background: #c7c7f075;
+}
+
+.chat-header {
+  text-align: center;
+  background: var(--chat-primary);
+  color: var(--chat-secondary);
+  font-size: bold;
+
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+
+  /* border-radius: 18px 0 0; */
+  padding: 15px 20px;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow: auto;
+  scrollbar-color: grey #cdcdcd;
+  scrollbar-width: none;
+  scrollbar-color: auto;
+  scroll-behavior: smooth;
+  scroll-padding: 0 0;
+  padding: 10px;
+}
+
+.message {
+  margin-bottom: 10px;
+  display: flex;
+  flex-flow: row;
+  align-items: self-end;
+  justify-content: right;
+  width: 100%;
+}
+
+.message-content {
+  align-self: flex-end;
+  max-width: 80%;
+  padding: 13px 14px;
+  background: var(--chat-secondary);
+
+  display: flex;
+  flex-flow: column;
+  justify-content: right;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.chat-input {
+  padding: 10px;
+  display: flex;
+  outline: none;
+}
+
+input {
+  flex: 1;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 21px;
+  outline: none;
+}
+
+.bot {
+  display: flex;
+
+  justify-content: left;
+}
+.user {
+  display: flex;
+  justify-content: right;
+
+  justify-content: right;
+  flex-flow: row-reverse;
+  margin-left: 5px;
+}
+.message-time {
+  font-size: 0.8rem;
+  color: var(--chat-secondary);
+  text-align: end;
+}
+.botcol {
+  border-radius: 12px 12px 12px 0;
+  color: black;
+}
+.cus {
+  background-color: var(--chat-primary);
+  border-radius: 12px 12px 0 12px;
+  color: white;
+  overflow-wrap: break-word;
+}
+.suggestedActionsContainer {
+    display: flex;
+    flex-flow: wrap;
+    overflow-x: hidden;
+    gap: 11px;
+    scrollbar-width: thin;
+    /* position: relative; */
+    width: 100%;
+    /* justify-items: stretch; */
+    /* align-items: stretch; */
+    /* justify-content: center; */
+  
+    padding: 1rem;
+}
+.suggestedActionsContainer-btn {
+  padding: 0.7rem 1rem;
+  text-wrap: nowrap;
+  border: 1px solid #0b556a;
+  background: white;
+  color: #0b556a;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+.suggestedActionsContainer-btn:hover {
+  background-color: rgb(243, 242, 241);
+}
+
+/* .scrollbuttons {
+  position: absolute;
+
+  right: 10px;
+}
+.scrollbuttons button {
+  background: #e4e4e487;
+  border: none;
+  padding: 4px;
+  border-radius: 30px;
+}
+.scrollbuttons-left {
+  position: absolute;
+
+  left: 10px;
+}
+.scrollbuttons-left button {
+  background: #e4e4e487;
+  border: none;
+  padding: 4px;
+  border-radius: 30px;
+} */
+
+.scrollbuttons {
+  position: sticky;
+}
+
+.scroll-left {
+  left: 10px;
+}
+
+.scroll-right {
+  right: 10px;
+}
+.agent-link{
+  background: rgb(224, 224, 224);
+border: none;
+padding: .5rem 2rem;
+}
+.agent-link a{
+  text-decoration: none;
+  
+}
+.agent-link a:hover{
+  text-decoration: underline;
+  
+}
+.carousel {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap; 
+}
+
+.carousel > div {
+  flex: 0 0 auto;
+  width: 300px; 
+  margin-right: 10px;
+}
+.carousel {
+  overflow-x: hidden;
+  white-space: nowrap; 
+}
+
+.carousel img {
+  display: inline-block;
+}
+.next{
+  border: none;
+    position: absolute;
+    right: -14px;
+    bottom: 50%;
+    background: #a4a4a45c;
+    color: white;
+    padding: 2px 5px;
+
+}
+.prev{
+  border: none;
+  position: absolute;
+  bottom: 50%;
+  background: #a4a4a45c;
+  color: white;
+  padding: 2px 5px;
+  left: -14px;
+}
+.input-box {
+  position: relative;
+}
+
+.upload-icon,
+.send-icon {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  height: 24px;
+}
+
+.upload-icon {
+  right: 40px;
+}
+.activity-btn{
+  padding: 8px 10px;
+    background: #0b556a;
+    color: white;
+    border: none;
+    animation: bounce .30000s infinite alternate;
+}
+@keyframes bounce {
+  to { transform: scale(1.1); }
+}

@@ -12,9 +12,12 @@ body {
   height: 100vh;
 }
 app-root {
-    height: 100%;
-    width: 100%;
-    display: block;
-    position: fixed;
-    right: 0;
-  }
+  height: 100%;
+  width: 100%;
+  display: block;
+  position: fixed;
+  right: 0;
+  --chat-primary: #0b556a;
+  --chat-secondary: white;
+  --chat-thirdary: #0b556a;
+}

@@ -1,53 +1,48 @@
 <script src="https://cdn.jsdelivr.net/npm/microsoft-adaptivecards@0.6.1/built/adaptive-cards.min.js"></script>
-<div
-  (click)="onPopUp()"
-  #botprofile
-  class="bot-profile"
-  style="
-    background: white;
-    display: none;
-    padding: 1rem;
-    border-radius: 76px;
-    height: 70px;
-    position: absolute;
-    right: 20px;
-    bottom: 10px;
-    background: #0b556a;
-    color: white;
-  "
->
-  <img src="./assets/chatbot.png" style="height: 50px; border-radius: 50%" />
-</div>
 
-<div class="chat-container" >
+<div *ngIf="showChatbot" class="chat-container" [@popupAnimation]>
   <!-- <div class="chat-container"> -->
   <div class="chat-header" style="box-shadow: 0 0 10px white">
-    <p>Bravishma Copilot</p>
+    <p style="flex: 1; text-align: center; align-items: center">
+      Bravishma Copilot
+    </p>
+    <!-- <span style="position: absolute; right: 19px; bottom: 11px">
+      <app-geolocation
+        style="margin-right: 70px; margin-bottom: 10px"
+      ></app-geolocation>
+    </span> -->
+    <span
+      ><img
+        style="
+          height: 1.4rem;
+          text-align: center;
+          padding-top: 3px;
+          /* color: white; */
+          filter: brightness(100);
+          cursor: pointer;
+        "
+        src="./assets/cross.png"
+        alt=""
+        (click)="closechat()"
+    /></span>
   </div>
 
   <!-- <div class="chat-messages"  style="overflow-anchor: none;"> -->
   <div class="chat-messages" #messageContainer>
-    <div class="ll" *ngFor="let msg of chatList; index as i">
+    <div class="ll" *ngFor="let msg of chatMessages; index as i">
       <div
-        *ngIf="msg.type !== 'typing' && msg.type !== 'event'"
         class="message"
         [ngClass]="{
-          bot: msg.from.role === 'bot',
-          user: msg.from.role === 'user',
-          anchor: chatList.length === i + 1
+          bot: msg.userType === typeAgent || msg.userType === typeSystem,
+          user: msg.userType === typeUser,
+          anchor: chatMessages.length === i + 1
         }"
       >
-        <!-- <img [src]="getUserImage()" class="profile-image"  *ngIf="msg.type.from === '' && msg.type !== 'event'" [ngClass]="{
-      
-        user: msg.from.role === 'user',
-  
-      }" > -->
-
         <img
-          *ngIf="msg.from.role === 'bot'"
+          *ngIf="msg.userType === typeAgent || msg.userType === typeSystem"
           src="./assets/chat-logo.png"
           class="profile-image bot"
-          [ngClass]="{bot: msg.from.role === 'bot',}"
+          [ngClass]="{bot: msg.userType === typeAgent || msg.userType===typeSystem,}"
           style="
             height: 25px;
             width: 25px;
@@ -58,223 +53,240 @@
         />
 
         <img
-          *ngIf="msg.from.role === 'user'"
+          *ngIf="msg.userType === typeUser"
           src="./assets/user-logo.svg"
           class="profile-image user"
-          [ngClass]="{user: msg.from.role === 'user',}"
+          [ngClass]="{user: msg.userType === typeUser,}"
           style="height: 25px; width: 25px; margin-bottom: 4px"
         />
 
         <div
           class="message-content"
           [ngClass]="{
-            botcol: msg.from.role === 'bot',
-            cus: msg.from.role === 'user'
+            botcol: msg.userType === typeAgent || msg.userType === typeSystem,
+            cus: msg.userType === typeUser,
+            file: msg.message_type === messsFile,
           }"
         >
-          <!-- <div class="message-text" [innerHTML]="msg.text"></div> -->
-          <!--  div for if attachment is there-->
-          <div
+          <!-- <div
             class="message-text"
             *ngIf="msg.type === 'message' && msg.attachments?.length > 0"
             [innerHTML]="getSafeHtml(msg.attachments[0].html)"
-          ></div>
+            (click)="onRatingSubmitted($event?.target)"
+          ></div> -->
           <!--  div for if text only-->
-          <div 
+          <div
             class="message-text"
-            *ngIf="msg.type === 'message'"
+            *ngIf="msg.message_type === messageTypeText"
             [innerHTML]="msg.text"
           ></div>
-          <!--  div for if iamge is there-->
           <div
             class=""
             style="position: relative"
-            *ngIf="
-              msg.attachments?.length > 0 || msg.attachmentLayout === 'carousel'
-            "
+            *ngIf="msg.message_type === messageTypeImage"
           >
-            <button
-              *ngIf="msg.attachmentLayout === 'carousel'"
-              class="prev"
-              (click)="scrollPrev()"
-              alt=""
-            >
-              prev
-            </button>
-            <div class="carousel" #carouselContainer>
-              
-              <div *ngFor="let attachment of msg.attachments">
-                <div *ngFor="let image of attachment.content.images">
-                  <img style="width: 100%" [src]="image.url" />
-                 
-                </div>
-              </div>
-              <button
-                *ngIf="msg.attachmentLayout === 'carousel'"
-                class="next"
-                (click)="scrollNext()"
-              >
-                Next
-              </button>
+            <img style="width: 100%; height: 50px" [src]="msg" />
+          </div>
+          <div
+            class=""
+            style="position: relative"
+            *ngIf="msg.message_type === messageTypeVideo"
+          >
+            <video
+              controls
+              style="width: 100%; height: 100%px"
+              [src]="msg.video"
+            ></video>
+          </div>
+
+          <div *ngIf="msg.message_type === messageType.Text">
+            {{ msg.text }}
+            <div *ngIf="msg.actions">
+              <span *ngFor="let action of msg.actions">
+                <span *ngIf="action.type === actionType.LocationRequest">
+                  <button class="location-btn" (click)="handleSendLocation()">
+                    {{ action.text }}
+                  </button>
+                </span>
+              </span>
             </div>
           </div>
-
-          <!--  div for if timestamp-->
-          <div
-            class="message-time"
-            [ngClass]="{
-              botcol: msg.from.role === 'bot',
-              cus: msg.from.role === 'user'
-            }"
-          >
-            {{ msg.timestamp | date : "hh:mm a" }}
-          </div>
-        </div>
-
-        <!-- <div
-          class="message-content"
-          [ngClass]="{
-            botcol: msg.from.role === 'bot',
-            cus: msg.from.role === 'user'
-          }"
-          *ngIf="msg.type === 'message' && msg.attachments?.length > 0"
-        >
-          <div
-            class="message-text"
-            [innerHTML]="getSafeHtml(msg.attachments[0].html)"
-          ></div>
-          <div 
-            class="message-time"
-            [ngClass]="{
-              botcol: msg.from.role === 'bot',
-              cus: msg.from.role === 'user'
-            }"
-          >
-            {{ msg.timestamp | date : "hh:mm a" }}
-          </div>
-        </div> -->
-      </div>
-      <!-- div for suggeested actins -->
-      <div
-        class="suggestedActionsContainer"
-        *ngIf="msg.suggestedActions"
-        #suggestedActionsContainer
-      >
-        <!-- <div class="scrollbuttons scroll-left">
-          <button (click)="scrollLeft()">
+          <div *ngIf="msg.message_type === messageType.Image">
             <img
-              style="height: 16px"
-              src="./assets/scrollarrowtoleft_83879.png"
+              style="width: 100%; height: 50px"
+              [src]="msg.userType === typeUser ? msg.image.data : msg.image.url"
+            />
+          </div>
+          <div *ngIf="msg.message_type === messageType.Audio">
+            <audio
+              controls
+              [src]="msg.userType === typeUser ? msg.audio.data : msg.audio.url"
+            ></audio>
+          </div>
+          <div *ngIf="msg.message_type === messageType.Video">
+            <video
+              controls
+              style="width: 100%; height: 100%px"
+              [src]="msg.userType === typeUser ? msg.video.data : msg.video.url"
+            ></video>
+          </div>
+          <div
+            class="file-container"
+            *ngIf="msg.message_type === messageType.File"
+          >
+            <img
+              style="height: 20px; margin-right: 4px"
+              src="./assets/pdf.png"
               alt=""
             />
-          </button>
-        </div> -->
+            <a
+              style="
+                text-decoration: none !important;
+                color: black;
+                display: flex;
+              "
+              [href]="msg.userType === typeUser ? msg.file.data : msg.file.url"
+              [download]="msg.file.name"
+              >{{ msg.file.name }}
+              <span
+                ><img
+                  alt="Download"
+                  style="height: 20px; margin-left: 4px"
+                  src="./assets/download.png"
+                  alt="" /></span
+            ></a>
+          </div>
+          <div *ngIf="msg.message_type === messageType.Location">
+            <!-- <strong>location : </strong>
+            Latitude : {{msg.location.lat}} , Longitude : {{msg.location.long}} -->
+            <!-- https://www.latlong.net/c/?lat=18.5855998&long=73.7830746 -->
+            <!-- <a
+              href="https://www.latlong.net/c/?lat={{
+                msg.location.lat
+              }}&long={{ msg.location.long }}"
+              target="_blank"
+              >location</a
+            > -->
+            <iframe [src]="msg.location.url"></iframe>
+          </div>
 
-        <!-- style="background: red; height: 100px; width: 100px" -->
-        <div *ngFor="let action of msg.suggestedActions.actions">
-          <button
-            class="suggestedActionsContainer-btn"
-            *ngIf="action.type !== 'openUrl'; else elseBlock"
-            (click)="
-              sendMessage(action.value, undefined, suggestedActionsContainer)
-            "
-          >
-            {{ action.text || action.value }}
-          </button>
-          <ng-template #elseBlock>
-            <button class="agent-link">
-              <a [href]="connectToAgentUrl" target="_blank">{{
-                action.value
-              }}</a>
-            </button>
-          </ng-template>
+          <!-- <div [ngSwitch]="msg.message_type">
+            <div *ngSwitchCase="messageType.Text">text</div>
+            <div *ngSwitchCase="messageType.Image">Image</div>
+            <div *ngSwitchCase="messageType.Audio">Audio</div>
+            <div *ngSwitchCase="messageType.Video">Video</div>
+            <div *ngSwitchCase="messageType.File">File</div>
+            <div *ngSwitchCase="messageType.Location">Location</div>
+            <div *ngSwitchDefault>wtf</div>
+          </div> -->
         </div>
-
-        <!-- <div class="scrollbuttons scroll-right">
-          <button (click)="scrollRight()">
-            <img
-              style="height: 16px"
-              src="./assets/right-arrowflat.png"
-              alt=""
-            />
-          </button>
-        </div> -->
       </div>
-      <!-- <div
-        class="adptv-card"
-        *ngIf="msg.type === 'message' && msg.attachments?.length > 0"
-        [innerHTML]="getSafeHtml(msg.attachments[0].html)"
-      ></div> -->
     </div>
   </div>
-  <form
-    (ngSubmit)="sendMessage(messageInput.value, messageInput)"
-    class="chat-input"
-  >
-    <!-- <input type="text" #messageInput /> -->
+  <form (ngSubmit)="sendText()" class="chat-input">
+    <div
+      class="drag-drop-container"
+      style=""
+      (drop)="handleDrop($event)"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+    >
+      <!-- <input
+        type="text"
+        #messageInput
+        name="message"
+        placeholder="Ask me anything..."
+        autocomplete="off"
+        autofocus
+        style="width: 100%;"
+        [ngStyle]="{'width.%': inputSize}"
+        (input)="updateInputSize($event)"
+        
+      /> -->
+      <label for="fileInput" class="fileInput" style="">
+        <span class="material-symbols-outlined" style="color: black">
+          add
+        </span>
+      </label>
 
-    <input
-      type="text"
-      #messageInput
-      name="message"
-      placeholder="Ask me anything..."
-      autocomplete="off"
-      autofocus
-     
-    />
-    
-    <span style="position: absolute; right: 19px; bottom: 11px">
+      <textarea
+        #messageInput
+        class="text-box"
+        name="message"
+        placeholder="Ask me anything..."
+        autocomplete="off"
+        style="width: 100%"
+        rows="1"
+        autofocus
+        (input)="updateInputSize($event)"
+        (input)="onInput($event)"
+        (keydown)="handleEnterPress($event)"
+        ></textarea>
+        <!-- (keydown)="handleEnterPress($event)" -->
+      <!-- [ngStyle]="{ 'height.px': inputSize }" -->
+
+      <!-- <span style="" class="sendBten"> -->
       <!-- <button
-        type="button"
-        (click)="fileInput.click()"
-        style="
-          padding: 0;
-          cursor: pointer;
-          margin: 0 5px;
-          border: none;
-          background: none;
-        "
-      >
-        <img
-          src="../assets/upload.png"
-          style="height: 24px"
-          alt="Upload icon"
-        />
-      </button> -->
+          type="button"
+          style="margin-bottom: 2px; border: none; background: white"
+          (click)="handleSendLocation($event)"
+        >
+          <img style="height: 22px" src="../assets/location.png" alt="" />
+        </button> -->
 
-      <input type="file" #fileInput style="display: none" />
+      <input
+        id="fileInput"
+        type="file"
+        #fileInput
+        (change)="handleFileSelect($event)"
+        style="display: none"
+      />
 
       <button
         type="submit"
-        style="
-          padding: 0;
-          cursor: pointer;
-          margin: 0;
-          border: none;
-          background: none;
-        "
+        class="sendBten"
+        style=""
+        [ngClass]="{ 'typing-text': isTyping }"
       >
-        <img
-          src="../assets/icons8-send-48.png"
-          style="height: 24px"
-          alt="Send icon"
-        />
+        <span
+          style=""
+          class="material-symbols-outlined send-icn"
+        
+        >
+          send
+        </span>
       </button>
-    </span>
+      <!-- </span> -->
+    </div>
   </form>
-  <div *ngIf="isUserInactive" class="inactivity-popup" style="position: absolute;
-  bottom: 76px;
-  left: 51px;
-  display: flex;
-    gap: 49px;
-">
 
-    <button class="activity-btn"  (click)="openLiveChat()">Talk to Agent</button>
-    
-    <button class="activity-btn"(click)="restartConversation()">Start Over</button>
-  
-    <button class="activity-btn"(click)="closeConversation()">Thank You</button>
-  
-  </div>
-  
+  <div
+    *ngIf="isUserInactive"
+    class="inactivity-popup"
+    style="
+      position: absolute;
+      bottom: 76px;
+      left: 51px;
+      display: flex;
+      gap: 49px;
+    "
+  ></div>
+</div>
+
+<div class="popup">
+  <!-- <img style="height: 150px;" src="./assets/openchat.jpeg" alt="" (click)="toggleChatbot()"> -->
+  <span
+    *ngIf="popUpOpenopen"
+    class="material-symbols-outlined"
+    (click)="toggleChatbot()"
+  >
+    forum
+  </span>
+  <span
+    *ngIf="popUpOpenClose"
+    class="material-symbols-outlined"
+    (click)="toggleChatbot()"
+  >
+    close
+  </span>
 </div>

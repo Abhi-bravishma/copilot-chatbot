@@ -1,0 +1,11 @@
+<div>
+  <p id="status">{{ status }}</p>
+  <a id="map-link" [href]="mapLink">{{ mapLink }}</a>
+</div>
+
+<button
+  style="margin-bottom: 2px; border: none; background: white"
+  (click)="geoFindMe()"
+>
+  <img style="height: 22px" src="../assets/location.png" alt="" />
+</button>

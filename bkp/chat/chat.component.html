@@ -1,0 +1,172 @@
+<script src="https://cdn.jsdelivr.net/npm/microsoft-adaptivecards@0.6.1/built/adaptive-cards.min.js"></script>
+
+
+<div class="chat-container">
+  <!-- <div class="chat-container"> -->
+  <div class="chat-header" style="box-shadow: 0 0 10px white">
+    <p>Bravishma Copilot</p>
+    <span style="position: absolute; right: 19px; bottom: 11px">
+      <app-geolocation   style="margin-right: 70px; margin-bottom: 10px;"></app-geolocation>
+     </span>
+  </div>
+
+  <!-- <div class="chat-messages"  style="overflow-anchor: none;"> -->
+  <div class="chat-messages" #messageContainer>
+    <div class="ll" *ngFor="let msg of chatMessages; index as i">
+      <div
+        class="message"
+        [ngClass]="{
+          bot: msg.role === 'bot',
+          user: msg.role === 'user',
+          anchor: chatMessages.length === i + 1
+        }"
+      >
+        <img
+          *ngIf="msg.role === 'bot'"
+          src="./assets/chat-logo.png"
+          class="profile-image bot"
+          [ngClass]="{bot: msg.role === 'bot',}"
+          style="
+            height: 25px;
+            width: 25px;
+            margin-bottom: 4px;
+            margin-right: 5px;
+            border-radius: 12px;
+          "
+        />
+
+        <img
+          *ngIf="msg.role === 'user'"
+          src="./assets/user-logo.svg"
+          class="profile-image user"
+          [ngClass]="{user: msg.role === 'user',}"
+          style="height: 25px; width: 25px; margin-bottom: 4px"
+        />
+
+        <div
+          class="message-content"
+          [ngClass]="{
+            botcol: msg.role === 'bot',
+            cus: msg.role === 'user'
+          }"
+        >
+       
+          <!-- <div
+            class="message-text"
+            *ngIf="msg.type === 'message' && msg.attachments?.length > 0"
+            [innerHTML]="getSafeHtml(msg.attachments[0].html)"
+            (click)="onRatingSubmitted($event?.target)"
+          ></div> -->
+          <!--  div for if text only-->
+          <div class="message-text" [innerHTML]="msg.msgText"></div>
+          <!--  div for if iamge is there-->
+          <div
+            class=""
+            style="position: relative"
+            *ngIf="
+              msg.image
+            "
+          ><img *ngIf="msg.type && msg.type.startsWith('image')" style="width: 100% ;height: 50px;" [src]="msg.image" >
+          <video *ngIf="msg.type && msg.type.startsWith('video')" controls style="width: 100% ;height: 100%px;"  [src]="msg.image"></video>
+          </div>
+          <!--   <button
+              *ngIf="msg.attachmentLayout === 'carousel'"
+              class="prev"
+              (click)="scrollPrev()"
+              alt=""
+            >
+              prev
+            </button>
+            <div class="carousel" #carouselContainer>
+              <div *ngFor="let attachment of msg.attachments">
+                <div *ngFor="let image of attachment.content.images">
+                  <img style="width: 100%" [src]="image.url" />
+                </div>
+              </div>
+              <button
+                *ngIf="msg.attachmentLayout === 'carousel'"
+                class="next"
+                (click)="scrollNext()"
+              >
+                Next
+              </button>
+            </div>
+          </div> -->
+
+          <!--  div for if timestamp-->
+          <!-- <div
+            class="message-time"
+            [ngClass]="{
+              botcol: msg.from.role === 'bot',
+              cus: msg.from.role === 'user'
+            }"
+          >
+            {{ msg.timestamp | date : "hh:mm a" }}
+          </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <form
+    (ngSubmit)="sendMessage()"
+    class="chat-input"
+  >
+  <div class="drag-drop-container" style="display: contents;" (drop)="onFileDropped($event)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
+    <input
+      type="text"
+      #messageInput
+     
+      
+      name="message"
+      placeholder="Ask me anything..."
+      autocomplete="off"
+      autofocus
+    
+      
+    />
+    
+    <span style="position: absolute; right: 19px; bottom: 11px">
+      <label for="fileInput" style="margin-right: 10px;">
+        <img src="../assets/file.png" style="height: 24px;" alt="Upload icon" />
+      </label>
+      <input id="fileInput" type="file" #fileInput (change)="onImageSelected($event)" style="display: none;">
+
+      <button
+        type="submit"
+        style="
+          padding: 0;
+          cursor: pointer;
+          margin: 0;
+          border: none;
+          background: none;
+        "
+        
+      >
+        <img
+          src="../assets/icons8-send-48.png"
+          style="height: 24px"
+          alt="Send icon"
+        />
+        
+      </button>
+      
+    </span>
+   
+</div>
+  
+  </form>
+ 
+  <div
+    *ngIf="isUserInactive"
+    class="inactivity-popup"
+    style="
+      position: absolute;
+      bottom: 76px;
+      left: 51px;
+      display: flex;
+      gap: 49px;
+    "
+  >
+    
+  </div>
+</div>
